@@ -85,10 +85,6 @@ class _SplashScreenState extends State<SplashScreen> {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     bool isLoggedIn = (prefs.getBool('is_logged_in') == null || prefs.getBool('is_logged_in') == false ? false : true);
 
-    String?   userName    = prefs.getString("user_name");
-    int?      userId      = prefs.getInt("user_id");
-    String?   userMobile  = prefs.getString("user_mobile");
-    String?   userEmail   = prefs.getString("user_email");
 
     Future.delayed(const Duration (seconds: 3),(){
       Get.off(()=>isLoggedIn ? WhatScreen(

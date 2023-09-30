@@ -41,6 +41,7 @@ class EditableBox extends StatelessWidget {
           borderRadius: BorderRadius.circular(10)
       ),
       child: TextField(
+        onChanged: onChanged,
         obscureText: isPassword,
         keyboardType: type,
         maxLength: maxLength,
