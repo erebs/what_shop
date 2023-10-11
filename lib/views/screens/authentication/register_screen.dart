@@ -26,7 +26,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       backgroundColor: AppColors.secondary,
       body: SafeArea(
         child: Container(
-          padding: EdgeInsets.symmetric( horizontal: 30),
+          padding: EdgeInsets.symmetric(horizontal: 30),
           width: double.infinity,
           height: double.infinity,
           color: Colors.white,
@@ -68,9 +68,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         height: 25,
                       ),
                       EditableBox(
-                        onChanged: (value){
-                          controller.errorMessage.value = '';
-                        },
+                          onChanged: (value) {
+                            controller.errorMessage.value = '';
+                          },
                           controller: controller.nameController,
                           hint: 'Enter your Name',
                           type: TextInputType.text),
@@ -78,32 +78,31 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         height: 15,
                       ),
                       EditableBox(
-                          onChanged: (value){
-                            if(value.length == 10){
-                              controller.verifyMobileNumber();
-                            }
+                          maxLength: 10,
+                          onChanged: (value) {
+                            // if (value.length == 10) {
+                            //   controller.verifyMobileNumber();
+                            // }
                             controller.errorMessage.value = '';
                           },
                           controller: controller.mobileNumberController,
                           hint: 'Enter your Mobile number',
-                          maxLength: 10,
                           type: TextInputType.phone),
                       const SizedBox(
                         height: 15,
                       ),
                       EditableBox(
-                          onChanged: (value){
+                          onChanged: (value) {
                             controller.errorMessage.value = '';
                           },
                           controller: controller.emailController,
                           hint: 'Enter your Email ID',
-
                           type: TextInputType.emailAddress),
                       const SizedBox(
                         height: 15,
                       ),
                       EditableBox(
-                          onChanged: (value){
+                          onChanged: (value) {
                             controller.errorMessage.value = '';
                           },
                           controller: controller.passwordController,
@@ -114,15 +113,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         height: 15,
                       ),
                       EditableBox(
-                          onChanged: (value){
+                          onChanged: (value) {
                             controller.errorMessage.value = '';
                           },
                           controller: controller.confirmPasswordController,
                           hint: 'Confirm your Password',
                           isPassword: true,
                           type: TextInputType.text),
-                      SizedBox(height: 10,),
-                      ErrorText(text: controller.errorMessage.toString()),
+                      SizedBox(
+                        height: 10,
+                      ),
+                     Obx(()=> ErrorText(text: controller.errorMessage.toString())),
                       const SizedBox(
                         height: 25,
                       ),
@@ -135,17 +136,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       const SizedBox(
                         height: 20,
                       ),
-                      Container(
+                      Obx(()=>  Container(
                         alignment: Alignment.center,
                         width: double.infinity,
                         child: Visibility(
                           visible: controller.isLoading.value,
                           child: const CustomProgressIndicator(),
-                        ),
+                        ),),
                       ),
                     ],
                   ),
-
                   TouchableOpacity(
                     onTap: () {
                       FocusScope.of(context).unfocus();

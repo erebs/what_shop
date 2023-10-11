@@ -156,3 +156,69 @@ class TabButtonDelete extends StatelessWidget {
     );
   }
 }
+
+
+
+class SecondaryButton extends StatelessWidget {
+  final String buttonText;
+  final VoidCallback? onTap;
+  final Color? backgroundColor;
+  final Color? fontColor;
+  final double? borderRadius;
+  final Color ?borderColor;
+  final double? fontSize;
+  final double? height;
+  final double? width;
+
+  const SecondaryButton(
+      {super.key,
+        required this.buttonText,
+        required this.onTap,
+        this.backgroundColor,
+        this.fontColor,
+        this.borderRadius,
+        this.borderColor,
+        this.fontSize,
+        this.height,
+        this.width});
+
+  @override
+  Widget build(BuildContext context) {
+    return TouchableOpacity(
+      onTap: onTap,
+      child: Container(
+        width:  width ?? double.infinity,
+        height: height ?? double.infinity,
+        decoration: BoxDecoration(
+            color: backgroundColor,
+            borderRadius: BorderRadius.circular(
+                borderRadius == null ? 0.0 : borderRadius!),
+            border: Border.all(color: borderColor ?? Colors.transparent)),
+        child: Center(
+          child: Text(
+            buttonText,
+            style: TextStyle(
+              color: fontColor,
+              fontSize: fontSize ?? 14,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+
+class DummySearchButton extends StatelessWidget {
+  const DummySearchButton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return TouchableOpacity(child:
+    Container(
+      
+    )
+    );
+  }
+}
+

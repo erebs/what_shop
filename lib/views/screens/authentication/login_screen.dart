@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:touchable_opacity/touchable_opacity.dart';
 import 'package:what_shop/constants/app_colors.dart';
+import 'package:what_shop/controller/login_controller.dart';
 import 'package:what_shop/views/screens/authentication/forgot_screen.dart';
 import 'package:what_shop/views/screens/authentication/register_screen.dart';
+import 'package:what_shop/views/screens/widget/error_text.dart';
+import 'package:what_shop/views/screens/widget/progress_indicator.dart';
 import 'package:what_shop/views/widgets/buttons.dart';
 import 'package:what_shop/views/widgets/inputs.dart';
 import 'package:get/get.dart';
@@ -16,8 +19,7 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
 
-  TextEditingController mobileController = TextEditingController();
-  TextEditingController passwordController = TextEditingController();
+final LoginController loginController = Get.put(LoginController());
 
 
   @override
@@ -56,20 +58,28 @@ class _LoginScreenState extends State<LoginScreen> {
                     SizedBox(height: 25,),
 
                     EditableBox(
-                        controller: mobileController,
+                        onChanged: (val){
+                          loginController.errorMessage.value ='';
+                        },
+                        controller:loginController.mobileNumberController,
                         hint: 'Mobile number',
+                        maxLength: 10,
                         type: TextInputType.phone),
 
                     SizedBox(height: 15,),
 
                     EditableBox(
-                        controller: passwordController,
+                      onChanged: (val){
+                        loginController.errorMessage.value ='';
+                      }
+                        ,
+                        controller: loginController.passwordController,
                         hint: 'Password',
                         isPassword: true,
                         type: TextInputType.text),
 
                     SizedBox(height: 15,),
-
+Obx(()=>ErrorText(text: loginController.errorMessage.value),),
                     Align(
                       alignment: Alignment.topRight,
                       child: TouchableOpacity(
@@ -85,17 +95,21 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ),
 
-                    SizedBox(height: 20,),
-
+                   const SizedBox(height: 20,),
                     PrimaryButton(
 
                         buttonText: 'Login',
-                        onTap: () {})
+                        onTap: () {
+                          closeKeyboard(context);
+                          loginController.loginUser();
+
+                        })
 
                   ],
                 ),
               ),
 
+            Obx(()=>  loginController.isLoading.value  ? CustomProgressIndicator():const SizedBox.shrink()),
 
               Align(
                 alignment: Alignment.bottomCenter,
@@ -126,4 +140,7 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
     );
   }
+void closeKeyboard(BuildContext context) {
+  FocusScope.of(context).requestFocus(FocusNode());
+}
 }

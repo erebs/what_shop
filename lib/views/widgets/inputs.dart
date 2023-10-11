@@ -29,7 +29,7 @@ class EditableBox extends StatelessWidget {
   bool isPassword;
   int maxLength;
   String prefix;
-  Function(String value) ? onChanged;
+  var onChanged;
 
   @override
   Widget build(BuildContext context) {
