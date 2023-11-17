@@ -25,6 +25,7 @@ class AllShopsController extends GetxController{
   Future<void> _getAllShopsData()async{
     try{
       isLoading.value=true;
+      errorMessage.value = '';
 
       final response = await ApiService().get('all-shops');
       if (response!.statusCode == 200) {

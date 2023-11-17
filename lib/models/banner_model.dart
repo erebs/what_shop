@@ -37,3 +37,25 @@ class BannerList {
     );
   }
 }
+class Poster {
+  int id;
+  String title;
+  String catId;
+  String image;
+
+  Poster({
+    required this.id,
+    required this.title,
+    required this.catId,
+    required this.image,
+  });
+
+  factory Poster.fromJson(Map<String, dynamic> json) {
+    return Poster(
+      id: json['id'],
+      title: json['title'],
+      catId: json['cat_id'],
+      image: json['image'],
+    );
+  }
+}

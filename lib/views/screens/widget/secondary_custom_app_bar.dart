@@ -9,20 +9,20 @@ class SecondaryCustomAppBar extends StatelessWidget implements PreferredSizeWidg
   final Size preferredSize;
 
   final String title;
-
-  SecondaryCustomAppBar({Key? key, required this.title})
-      : preferredSize = Size.fromHeight(47),
+final onTap;
+  SecondaryCustomAppBar({Key? key, required this.title,this.onTap})
+      : preferredSize = Size.fromHeight(60),
         super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return PreferredSize(
-      preferredSize: Size.fromHeight(47),
+      preferredSize: Size.fromHeight(Get.height / 4),
       child: Container(
         color: AppColors.primaryDark,
         child: Row(
           children: [
-            IconButton(onPressed: (){
+            IconButton(onPressed:onTap ?? () {
               Get.back();
             }, icon:Icon(Remix.arrow_left_s_line,color: AppColors.fontOnSecondary,)),
             SizedBox(width: 5,),

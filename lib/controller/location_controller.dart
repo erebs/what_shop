@@ -15,7 +15,7 @@ class LocationController extends GetxController {
   @override
   void onInit(){
     super.onInit();
-
+    getPosition();
   }
 
 
@@ -63,16 +63,17 @@ class LocationController extends GetxController {
       e.toString();
     }
   }
-  Future<Position?> getPosition()async{
-    try{
-      location =  await Geolocator.getCurrentPosition(
+
+  Future<Position?> getPosition() async {
+    try {
+      location = await Geolocator.getCurrentPosition(
           desiredAccuracy: LocationAccuracy.high);
-      return  location;
-    }catch(e){
-Get.snackbar('', e.toString());
+      print(location);
+      return location;
+    } catch (e) {
+      Get.snackbar('', e.toString());
     }
   }
-
 
   Future<String?> getAddress(lat,long)async{
     try{

@@ -169,7 +169,9 @@ class SecondaryButton extends StatelessWidget {
   final double? fontSize;
   final double? height;
   final double? width;
-
+ final FontWeight? fontWeight;
+ final bool? isLoading;
+ final Color? loaderColor;
   const SecondaryButton(
       {super.key,
         required this.buttonText,
@@ -180,11 +182,16 @@ class SecondaryButton extends StatelessWidget {
         this.borderColor,
         this.fontSize,
         this.height,
-        this.width});
+        this.width,
+      this.fontWeight,
+      this.isLoading,
+        this.loaderColor,
+      });
 
   @override
   Widget build(BuildContext context) {
     return TouchableOpacity(
+      activeOpacity: .8,
       onTap: onTap,
       child: Container(
         width:  width ?? double.infinity,
@@ -195,11 +202,12 @@ class SecondaryButton extends StatelessWidget {
                 borderRadius == null ? 0.0 : borderRadius!),
             border: Border.all(color: borderColor ?? Colors.transparent)),
         child: Center(
-          child: Text(
+          child: isLoading == true ? CircularProgressIndicator(color:loaderColor ?? Colors.white,strokeWidth:2,) : Text(
             buttonText,
             style: TextStyle(
               color: fontColor,
               fontSize: fontSize ?? 14,
+              fontWeight: fontWeight ?? FontWeight.w400
             ),
           ),
         ),

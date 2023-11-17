@@ -2,9 +2,11 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:what_shop/controller/user_data_controller.dart';
 import 'package:what_shop/models/user_details_model.dart';
 import 'package:what_shop/utils/api_services.dart';
 import 'package:what_shop/utils/app_routes.dart';
+import 'package:what_shop/utils/shared_pref_util.dart';
 
 class LoginController extends GetxController {
   final TextEditingController mobileNumberController = TextEditingController();
@@ -33,6 +35,7 @@ class LoginController extends GetxController {
 
         if (jsonData['sts'] == '01') {
           UserResponse userData = UserResponse.fromJson(jsonData);
+          await SharedPrefUtil().setUserData(id: userData.user.id.toString(),name: userData.user.name,phone: userData.user.phone,email:userData.user.email);
           Get.offAllNamed(RouteName.homeScreen);
         }
       }

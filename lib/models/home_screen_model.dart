@@ -2,14 +2,14 @@ class DefaultShops {
   final String? sts;
   final String? msg;
   final List<HomeCategory>? categories;
-  final List<Advertisement>? firstad;
+  final List<Advertisement> firstad;
   final List<Advertisement>? secondad;
   final List<NewShops>? newshops;
   DefaultShops({
     this.sts,
     this.msg,
     this.categories,
-    this.firstad,
+    required this.firstad,
     this.secondad,
     this.newshops,
   });

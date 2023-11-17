@@ -48,7 +48,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             fontWeight: FontWeight.bold),
                       ),
                       const Text(
-                        "WhatShop",
+                        "U MALL",
                         style: TextStyle(
                             color: AppColors.primary,
                             fontSize: 18,
@@ -141,7 +141,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         width: double.infinity,
                         child: Visibility(
                           visible: controller.isLoading.value,
-                          child: const CustomProgressIndicator(),
+                          child:  CustomProgressIndicator(),
                         ),),
                       ),
                     ],

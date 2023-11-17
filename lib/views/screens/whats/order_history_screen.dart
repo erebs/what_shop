@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:remixicon/remixicon.dart';
 import 'package:touchable_opacity/touchable_opacity.dart';
 import 'package:what_shop/constants/appSizes.dart';
 import 'package:what_shop/constants/app_colors.dart';
-import 'package:what_shop/constants/app_images.dart';
-import 'package:what_shop/views/screens/widget/app_bar.dart';
+import 'package:what_shop/controller/order_details_controller.dart';
+import 'package:what_shop/controller/order_history_controller.dart';
+import 'package:what_shop/utils/api_state_enum.dart';
+import 'package:what_shop/utils/app_routes.dart';
+import 'package:what_shop/views/screens/common/error_page.dart';
 import 'package:what_shop/views/screens/widget/primary_text.dart';
 import 'package:what_shop/views/screens/widget/secondary_custom_app_bar.dart';
-import 'package:what_shop/views/widgets/buttons.dart';
 
 class OrderHistoryScreen extends StatefulWidget {
   const OrderHistoryScreen({super.key});
@@ -17,149 +20,131 @@ class OrderHistoryScreen extends StatefulWidget {
 }
 
 class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
+  final OrderDetailsController orderDetailsController = Get.put(OrderDetailsController());
+  final OrderHistoryController orderHistoryController =
+      Get.put(OrderHistoryController());
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        appBar:SecondaryCustomAppBar(title: 'Orders'),
-        body: Container(
-            color: AppColors.inputBackgroundColor,
-            padding: const EdgeInsets.symmetric(
+          backgroundColor: AppColors.inputBackgroundColor,
+          appBar: SecondaryCustomAppBar(title: 'Orders'),
+          body: Container(
+            padding: EdgeInsets.symmetric(
                 horizontal: horizontalPadding, vertical: 20),
             width: Get.width,
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                dummyOrderCard(),],
-            )),
-      ),
+                Obx(() {
+                  if (orderHistoryController.orderState.value ==
+                      DataState.Loading) {
+                    return CircularProgressIndicator();
+                  }
+                  if (orderHistoryController.orderState.value ==
+                      DataState.Error) {
+                    return ErrorScreen(errorMsg: orderHistoryController.errorMessage.value, onTap: (){
+                      orderHistoryController.getOrders();
+                    });
+                  }
+                  if (orderHistoryController.orderState.value ==
+                      DataState.Empty) {
+                    return Text('Empty');
+                  }
+                  if (orderHistoryController.orderState.value ==
+                      DataState.Data) {
+                    return Expanded(
+                      child: ListView.builder(
+                          itemCount: orderHistoryController
+                              .orders?.value?.orders?.length,
+                          itemBuilder: (context, index) {
+                            final data = orderHistoryController
+                                .orders!.value!.orders![index];
+                            return orderCard(
+                              onTap: (){
+                                orderDetailsController.getOrderDetails(orderId: data.id.toString());
+                                Get.toNamed(RouteName.orderDetailsScreen);
+                              },
+                                orderId: data.id,
+                                amount:data.amount,
+                                orderDate: data.order_on?.split(' ')[0],
+                                paymentStatus: data.paystatus,
+                                paymentType: data.paytype);
+                          }),
+                    );
+                  }
+                  return Text('EMpty outside');
+                })
+              ],
+            ),
+          )),
     );
   }
 
-  // this is a card to show when orders are loading
-  Widget dummyOrderCard() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 15),
-      decoration: BoxDecoration(
-          color: AppColors.fontOnSecondary,
-          borderRadius: BorderRadius.circular(12)),
-      width: Get.width,
-      height: 110,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(10),
-            child: Container(
-              decoration: BoxDecoration(
-                  border: Border.all(color: AppColors.inputBackgroundColor)),
-              width: 72,
-              height: 75,
-            ),
-          ),
-          const SizedBox(
-            width: 16,
-          ),
-          SecondaryButton(
-            buttonText: 'Delete',
-            onTap: () {},
-            height: 20,
-            width: 45,
-            fontColor: AppColors.mediumLight,
-            borderColor: AppColors.inputBackgroundColor,
-            borderRadius: 7,
-            fontSize: 10,
-          )
-        ],
-      ),
-    );
-  }
-  // this is card widget for order
   Widget orderCard(
-      {required onTap,
-      required String productName,
-      required String offerPrice,
-      required String price,
-      required String status,
-      required onDelete}) {
+      {amount, orderId, paymentType, orderDate, paymentStatus, onTap}) {
     return TouchableOpacity(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 15),
+        margin: EdgeInsets.only(bottom: 10),
         decoration: BoxDecoration(
-            color: AppColors.fontOnSecondary,
-            borderRadius: BorderRadius.circular(12)),
+            color: Colors.white, borderRadius: BorderRadius.circular(10)),
+        padding: EdgeInsets.symmetric(horizontal: 10, vertical: 15),
         width: Get.width,
-        height: 110,
+        height: 80,
         child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(10),
-              child: Container(
-                width: 72,
-                height: 75,
-                child: Image.asset(
-                  AppImages.banner,
-                  fit: BoxFit.cover,
-                ),
-              ),
+            Icon(
+              Remix.shopping_cart_2_line,
+              size: 20,
             ),
-            const SizedBox(
-              width: 16,
+            SizedBox(
+              width: 15,
             ),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    productName.isNotEmpty ? productName : 'Product Name',
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: 2,
+                  PrimaryText(
+                      text: '#$orderId',
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                      color: AppColors.fontOnWhite),
+                  PrimaryText(
+                    text: 'Amount : ₹ $amount',
+                    color: AppColors.fontOnWhite,
                   ),
-                  SizedBox(
-                    height: 7,
-                  ),
-                  Row(
-                    children: [
-                      PrimaryText(
-                        text: offerPrice,
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
-                      ),
-                      SizedBox(
-                        width: 5,
-                      ),
-                      Text(
-                        price,
-                        style: TextStyle(
-                            decoration: TextDecoration.lineThrough,
-                            fontSize: 9,
-                            color: AppColors.mediumLight),
-                      ),
-                    ],
-                  ),
-                  Padding(
-                    padding: EdgeInsets.only(top: 10),
-                    child: PrimaryText(
-                      text: status,
-                      color: Colors.red,
-                    ),
+                  PrimaryText(
+                    text: 'Payments Type : $paymentType',
+                    color: AppColors.fontOnWhite,
                   )
                 ],
               ),
             ),
-            SecondaryButton(
-              buttonText: 'Delete',
-              onTap: onDelete,
-              height: 20,
-              width: 45,
-              fontColor: AppColors.mediumLight,
-              borderColor: AppColors.inputBackgroundColor,
-              borderRadius: 7,
-              fontSize: 10,
+            Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                PrimaryText(
+                    text: paymentStatus,
+                    fontWeight: FontWeight.w500,
+                    color: paymentStatus == 'Pending'
+                        ? Colors.amber
+                        : paymentStatus == 'Success' ?
+                    Colors.green:
+                            paymentStatus == 'Cancelled' ?
+
+                                Colors.red
+                            : Colors.blueAccent),
+                PrimaryText(
+                  text: orderDate,
+                  fontSize: 9,
+                  color: AppColors.mediumLight,
+                ),
+              ],
             )
           ],
         ),

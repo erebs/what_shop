@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:touchable_opacity/touchable_opacity.dart';
+import 'package:what_shop/controller/forget_password_controller.dart';
+import 'package:what_shop/controller/login_controller.dart';
 import 'package:what_shop/views/screens/authentication/register_screen.dart';
 import 'package:get/get.dart';
 import '../../../constants/app_colors.dart';
@@ -13,9 +15,12 @@ class ForgotScreen extends StatefulWidget {
 }
 
 class _ForgotScreenState extends State<ForgotScreen> {
+  final ForgetPasswordController forgetPasswordController = Get.put(ForgetPasswordController());
+  final LoginController loginController = Get.find();
+
   TextEditingController mobileController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
-  TextEditingController cPasswordController = TextEditingController();
+  TextEditingController confirmPasswordController = TextEditingController();
 
 
   @override
@@ -45,7 +50,7 @@ class _ForgotScreenState extends State<ForgotScreen> {
                           color: AppColors.secondary,
                           fontSize: 16,
                           fontWeight: FontWeight.bold),),
-                    Text("WhatShop",
+                    Text("U MALL",
                       style: TextStyle(
                           color: AppColors.primary,
                           fontSize: 18,
@@ -90,7 +95,7 @@ class _ForgotScreenState extends State<ForgotScreen> {
                     SizedBox(height: 15,),
 
                     EditableBox(
-                        controller: cPasswordController,
+                        controller: confirmPasswordController,
                         hint: 'Confirm Password',
                         isPassword: true,
                         type: TextInputType.text),

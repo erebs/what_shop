@@ -44,7 +44,7 @@ final LoginController loginController = Get.put(LoginController());
                           color: AppColors.secondary,
                           fontSize: 16,
                           fontWeight: FontWeight.bold),),
-                    Text("WhatShop",
+                    Text("U MALL",
                       style: TextStyle(
                           color: AppColors.primary,
                           fontSize: 18,

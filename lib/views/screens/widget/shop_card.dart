@@ -6,15 +6,15 @@ import 'package:what_shop/constants/app_variables.dart';
 import 'package:what_shop/views/screens/widget/primary_text.dart';
 
 class ShopCard extends StatelessWidget {
-  final String image;
-  final String name;
+  final String? image;
+  final String? name;
   final String? rating;
   final void Function() onTap;
 
   const ShopCard(
       {super.key,
-      required this.image,
-      required this.name,
+       this.image,
+       this.name,
       this.rating,
       required this.onTap});
 
@@ -23,6 +23,7 @@ class ShopCard extends StatelessWidget {
     return TouchableOpacity(
       onTap: onTap,
       child: Container(
+
         constraints: const BoxConstraints(
           minHeight: 90,
           // maxHeight: 110,
@@ -38,12 +39,14 @@ class ShopCard extends StatelessWidget {
                 width: 70,
                 decoration:
                     BoxDecoration(
+
                         color: AppColors.fontOnSecondary,
+
                         borderRadius: BorderRadius.circular(12)),
-                child: image.isNotEmpty
+                child: image!.isNotEmpty
                     ?
                 Image.network(
-                        AppVariables.baseUrl + image,
+                        AppVariables.baseUrl + image!,
                         errorBuilder: (context, error, stackTrace) => Container(
                           color: AppColors.fontOnSecondary,
                           constraints: const BoxConstraints(
@@ -75,7 +78,7 @@ class ShopCard extends StatelessWidget {
               height: 7,
             ),
             PrimaryText(
-              text: name,
+              text: name ?? '',
               fontSize: 9,
             ),
             // Row(

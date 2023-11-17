@@ -1,5 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
 import 'package:remixicon/remixicon.dart';
 import 'package:touchable_opacity/touchable_opacity.dart';
@@ -393,6 +394,52 @@ class TextBox extends StatelessWidget {
             )
         )
 
+    );
+  }
+}
+
+class CustomTextField extends StatelessWidget {
+  final Color? bgColor;
+  final double? height;
+  final double? containerHeight;
+  final String hintText;
+  final Color? borderColor;
+  final double? borderWidth;
+  final double? borderRadius;
+  final TextEditingController controller;
+  final TextInputType? keyBoardType;
+  final double? fontSize;
+  final Color? fontColor;
+  final  onChanged;
+final double? horizontalPadding;
+  const CustomTextField({super.key,this.bgColor,this.height,this.containerHeight,required this.hintText,this.borderColor,this.borderWidth,this.borderRadius,required this.controller,this.keyBoardType,this.fontSize,this.fontColor,this.onChanged,this.horizontalPadding});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal:horizontalPadding ?? 15),
+      width:double.infinity,
+      height:containerHeight ?? 50,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(borderRadius ?? 0),
+        color:bgColor ?? Colors.transparent ,
+            border: Border.all(width:borderWidth ?? 0,color:borderColor ?? Colors.transparent)
+      ),
+      child: Center(
+        child: TextField(
+          keyboardType:keyBoardType ?? TextInputType.text ,
+          controller: controller,
+textAlign: TextAlign.start,
+          onChanged: onChanged,
+          decoration: InputDecoration(
+            contentPadding:EdgeInsets.symmetric(vertical:height ?? 0),
+            hintText: hintText,
+            hintStyle: TextStyle(fontSize: fontSize ?? 11,color: fontColor ?? Colors.grey),
+
+            border: InputBorder.none
+          ),
+        ),
+      ),
     );
   }
 }

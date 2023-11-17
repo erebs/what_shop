@@ -6,5 +6,13 @@ class AppImages {
   static const String appLogo = "${assetsImageFolder}appLogo.png";
   static const String banner = "${assetsImageFolder}banner.png";
   static const String graphicImage1 = "${assetsImageFolder}graphicImage1.png";
+static const String appLogoSvg = "${assetsImageFolder}appLogo.svg";
+  static const String noAddressSvg = "${assetsImageFolder}noAddress.svg";
+  static const String errorImg = "${assetsImageFolder}error.svg";
+  static const String noCartItems = "${assetsImageFolder}noCartItems.svg";
+  static const String noShops = "${assetsImageFolder}noShops.svg";
+  static const String placeOrderSuccess = "${assetsImageFolder}placeOrderSuccess.svg";
+
+
 
 }
