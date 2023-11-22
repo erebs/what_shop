@@ -156,3 +156,77 @@ class TabButtonDelete extends StatelessWidget {
     );
   }
 }
+
+
+
+class SecondaryButton extends StatelessWidget {
+  final String buttonText;
+  final VoidCallback? onTap;
+  final Color? backgroundColor;
+  final Color? fontColor;
+  final double? borderRadius;
+  final Color ?borderColor;
+  final double? fontSize;
+  final double? height;
+  final double? width;
+ final FontWeight? fontWeight;
+ final bool? isLoading;
+ final Color? loaderColor;
+  const SecondaryButton(
+      {super.key,
+        required this.buttonText,
+        required this.onTap,
+        this.backgroundColor,
+        this.fontColor,
+        this.borderRadius,
+        this.borderColor,
+        this.fontSize,
+        this.height,
+        this.width,
+      this.fontWeight,
+      this.isLoading,
+        this.loaderColor,
+      });
+
+  @override
+  Widget build(BuildContext context) {
+    return TouchableOpacity(
+      activeOpacity: .8,
+      onTap: onTap,
+      child: Container(
+        width:  width ?? double.infinity,
+        height: height ?? double.infinity,
+        decoration: BoxDecoration(
+            color: backgroundColor,
+            borderRadius: BorderRadius.circular(
+                borderRadius == null ? 0.0 : borderRadius!),
+            border: Border.all(color: borderColor ?? Colors.transparent)),
+        child: Center(
+          child: isLoading == true ? CircularProgressIndicator(color:loaderColor ?? Colors.white,strokeWidth:2,) : Text(
+            buttonText,
+            style: TextStyle(
+              color: fontColor,
+              fontSize: fontSize ?? 14,
+              fontWeight: fontWeight ?? FontWeight.w400
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+
+class DummySearchButton extends StatelessWidget {
+  const DummySearchButton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return TouchableOpacity(child:
+    Container(
+      
+    )
+    );
+  }
+}
+

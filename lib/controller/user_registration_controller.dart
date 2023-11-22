@@ -46,18 +46,20 @@ class UserRegistrationController extends GetxController {
 
   Future<void> _verifyMobileNumber() async {
     try {
+      isMobileVerified.value = false;
       final response = await ApiService().post(
           endPoint: 'check/customer/number',
-          body: {'number': mobileNumberController.text.toString()});
+          body: {'number': mobileNumberController.text});
       final responseStatus = jsonDecode(response!.body)['sts'];
 
-      if (responseStatus == '01') {
+      if (responseStatus == '00') {
 
         isMobileVerified.value = true;
-        return;
+
       }
     } catch (e) {
       Get.snackbar('', e.toString());
+      print(e.toString());
     }
   }
 
@@ -82,10 +84,10 @@ class UserRegistrationController extends GetxController {
         return;
       }
       // checking if mobile number is verified or not
-      if (isMobileVerified.value == false) {
-        errorMessage.value = mobileNumberAlreadyExist;
-        return;
-      }
+      // if (isMobileVerified.value == false) {
+      //   errorMessage.value = mobileNumberAlreadyExist;
+      //   return;
+      // }
       // if (emailStatus.value.toString() == emailDoesNotExist) {
       //   errorMessage.value = emailDoesNotExist;
       //   return;
@@ -99,15 +101,18 @@ class UserRegistrationController extends GetxController {
       }
       final response =
           await ApiService().post(endPoint: 'customer/register', body: data);
-      final responseStatus = jsonDecode(response!.body)['sts'].toString();
-      if (responseStatus == '00') {
-        Future.delayed(const Duration(seconds: 1),
-            () => Get.offNamed(RouteName.loginScreen));
-      } else {
-        Get.snackbar('', responseStatus);
+      if (response!.statusCode == 200){
+        final responseStatus = jsonDecode(response.body)['sts'];
+        if (responseStatus == '01') {
+          Future.delayed(const Duration(seconds: 1),
+                  () => Get.offNamed(RouteName.loginScreen));
+        } else {
+          Get.snackbar('', responseStatus);
+        }
       }
+
     } catch (e) {
-      Get.snackbar('', e.toString());
+      errorMessage.value = e.toString();
     } finally {
       isLoading.value = false;
       print(errorMessage.value);

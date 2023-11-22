@@ -1,15 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:remixicon/remixicon.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:what_shop/constants/app_colors.dart';
 import 'package:what_shop/constants/app_images.dart';
 import 'package:what_shop/constants/app_variables.dart';
+import 'package:what_shop/utils/app_routes.dart';
+import 'package:what_shop/utils/shared_pref_util.dart';
 import 'package:what_shop/views/screens/authentication/forgot_screen.dart';
 import 'package:what_shop/views/screens/authentication/register_screen.dart';
-import 'package:what_shop/views/screens/whats/whats_screen.dart';
+import 'package:what_shop/views/screens/whats/home_screen.dart';
 
 import 'login_screen.dart';
+
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
 
@@ -18,11 +22,10 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-
   @override
   void initState() {
     super.initState();
-    screenNavigation();
+    checkIsUserLoggedIn();
   }
 
   @override
@@ -38,64 +41,58 @@ class _SplashScreenState extends State<SplashScreen> {
                 child: Stack(
                   alignment: Alignment.center,
                   children: [
-
-                    Image.asset(AppImages.bgImage, color: Colors.black,),
-
+                    Image.asset(
+                      AppImages.bgImage,
+                      color: Colors.black,
+                    ),
                     Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-
-                        Icon(Remix.shopping_bag_3_line, color: AppColors.fontOnSecondary, size: 50,),
-                        SizedBox(height: 5,),
-                        Text("WhatShop",
-                          style: TextStyle(
-                              color: AppColors.fontOnSecondary,
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold),),
+                        SvgPicture.asset(
+                          AppImages.appLogoSvg,
+                          height: 50,
+                        ),
+                        SizedBox(
+                          height: 5,
+                        ),
                       ],
                     ),
                   ],
                 ),
               ),
             ),
-
             Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Text("Developed By",
+                Text(
+                  "Developed By",
                   style: TextStyle(
-                      color: AppColors.fontOnSecondary,
-                      fontSize: 12,),),
+                    color: AppColors.fontOnSecondary,
+                    fontSize: 12,
+                  ),
+                ),
                 Image.asset(AppImages.ereLogo),
-                SizedBox(height: 5,),
-
+                SizedBox(
+                  height: 5,
+                ),
               ],
             ),
-
           ],
         ),
       ),
     );
   }
 
-  screenNavigation () async {
-
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    bool isLoggedIn = (prefs.getBool('is_logged_in') == null || prefs.getBool('is_logged_in') == false ? false : true);
-
-
-    Future.delayed(const Duration (seconds: 3),(){
-      Get.off(()=>isLoggedIn ? WhatScreen(
-        // userName: userName!,
-        // userMobile: userMobile!,
-        // userEmail: userEmail!,
-      ) :  const LoginScreen(),
-          transition: Transition.native,
-          duration: const Duration(microseconds: 1200));
-    });
-
+  checkIsUserLoggedIn() async {
+    final userId = await SharedPrefUtil().getUserId();
+    if (userId != null && userId.isNotEmpty) {
+      Get.offAllNamed(RouteName.homeScreen);
+      return;
+    } else {
+      Get.offAllNamed(RouteName.loginScreen);
+      return;
+    }
   }
-
 }
