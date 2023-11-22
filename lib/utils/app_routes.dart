@@ -9,6 +9,7 @@ import 'package:what_shop/views/screens/common/placeorder_success_screen.dart';
 import 'package:what_shop/views/screens/whats/add_address_screen.dart';
 import 'package:what_shop/views/screens/whats/address_screen.dart';
 import 'package:what_shop/views/screens/whats/all_categories_screen.dart';
+import 'package:what_shop/views/screens/whats/all_favourite_products_screen.dart';
 import 'package:what_shop/views/screens/whats/all_products_screen.dart';
 import 'package:what_shop/views/screens/whats/category_wise_products_screen.dart';
 import 'package:what_shop/views/screens/whats/change_password_screen.dart';
@@ -41,6 +42,7 @@ class RouteName {
   static const String placeOrderSuccessScreen = '/placeOrderSuccessScreen';
   static const String allCategoryScreen = '/allCategoryScreen';
   static const String categoryWiseProductScreen = '/categoryWiseProductScreen';
+  static const String allFavouriteProductsScreen = '/allFavouriteProductsScreen';
 
 }
 
@@ -133,6 +135,11 @@ class AppRoutes {
     GetPage(
         name: RouteName.categoryWiseProductScreen,
         page: () => const CategoryWiseProductScreen(),
+        transition: Transition.leftToRight,
+        transitionDuration: Duration(milliseconds: 200)),
+    GetPage(
+        name: RouteName.allFavouriteProductsScreen,
+        page: () => const AllFavouriteProductsScreen(),
         transition: Transition.leftToRight,
         transitionDuration: Duration(milliseconds: 200)),
       ];

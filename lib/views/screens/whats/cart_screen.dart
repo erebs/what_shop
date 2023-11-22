@@ -24,7 +24,7 @@ class CartScreen extends StatefulWidget {
 
 class _CartScreenState extends State<CartScreen> {
   final CartItemsController cartItemsController =
-  Get.put(CartItemsController());
+      Get.put(CartItemsController());
   RxString selectedPayment = 'CoD'.obs;
   final shopId = Get.arguments;
   final AddressController addressController = Get.put(AddressController());
@@ -46,8 +46,8 @@ class _CartScreenState extends State<CartScreen> {
                       height: Get.height,
                       child: Center(
                           child: CircularProgressIndicator(
-                            color: AppColors.primary,
-                          )));
+                        color: AppColors.primary,
+                      )));
                 }
                 if (cartItemsController.errorMsg.isNotEmpty) {
                   return ErrorScreen(
@@ -80,23 +80,22 @@ class _CartScreenState extends State<CartScreen> {
                     headerText(heading: 'Payment Options'),
                     paymentOptions(),
                     Obx(
-                          () =>
-                      addressController.addresses.isEmpty
+                      () => addressController.addresses.isEmpty
                           ? const SizedBox.shrink()
                           : Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          headerText(heading: 'Delivery Address'),
-                          SizedBox(height: 5),
-                          Container(
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(12),
-                                color: AppColors.fontOnSecondary,
-                              ),
-                              padding: EdgeInsets.symmetric(vertical: 24),
-                              child: addressList()),
-                        ],
-                      ),
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                headerText(heading: 'Delivery Address'),
+                                SizedBox(height: 5),
+                                Container(
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(12),
+                                      color: AppColors.fontOnSecondary,
+                                    ),
+                                    padding: EdgeInsets.symmetric(vertical: 24),
+                                    child: addressList()),
+                              ],
+                            ),
                     ),
                     SizedBox(
                       height: 7,
@@ -106,7 +105,6 @@ class _CartScreenState extends State<CartScreen> {
                       height: 27,
                     ),
                     buyNowButton(),
-
                   ],
                 );
               })),
@@ -117,36 +115,36 @@ class _CartScreenState extends State<CartScreen> {
 
   // cart items
   Widget cartItems() {
-    return Obx(() =>
-        Column(
+    return Obx(() => Column(
           children: [
             ...cartItemsController.cartItems.value?.cart?.map((data) {
-              return cartCard(
-                  image: data.image,
-                  netWeight: data.unitname,
-                  offerPrice: data.unitofferprice,
-                  price: data.unitprice,
-                  productName: data.productname,
-                  quantity: data.quantity,
-                  cartId: data.id,
-                  deliveryCharge: data.deliveryCharge,
-                  gst: data.tax);
-            }).toList() ??
+                  return cartCard(
+                      image: data.image,
+                      netWeight: data.unitname,
+                      offerPrice: data.unitofferprice,
+                      price: data.unitprice,
+                      productName: data.productname,
+                      quantity: data.quantity,
+                      cartId: data.id,
+                      deliveryCharge: data.deliveryCharge,
+                      gst: data.tax);
+                }).toList() ??
                 [],
           ],
         ));
   }
 
   // cart card widget
-  Widget cartCard({netWeight,
-    quantity,
-    productName,
-    price,
-    offerPrice,
-    cartId,
-    image,
-    deliveryCharge,
-    gst}) {
+  Widget cartCard(
+      {netWeight,
+      quantity,
+      productName,
+      price,
+      offerPrice,
+      cartId,
+      image,
+      deliveryCharge,
+      gst}) {
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
@@ -187,8 +185,11 @@ class _CartScreenState extends State<CartScreen> {
           ),
           SizedBox(width: 18),
           Expanded(
-
-              child: PrimaryText(text: netWeight ?? '', color: AppColors.primary,alignment:TextAlign.right,)),
+              child: PrimaryText(
+            text: netWeight ?? '',
+            color: AppColors.primary,
+            alignment: TextAlign.right,
+          )),
         ],
       ),
     );
@@ -234,8 +235,7 @@ class _CartScreenState extends State<CartScreen> {
         borderRadius: BorderRadius.circular(10),
         child: Image.network(AppVariables.baseUrl + image,
             fit: BoxFit.cover,
-            errorBuilder: (context, error, stackTrace) =>
-                Center(
+            errorBuilder: (context, error, stackTrace) => Center(
                   child: PrimaryText(text: 'No image', fontSize: 8),
                 )),
       ),
@@ -290,7 +290,7 @@ class _CartScreenState extends State<CartScreen> {
     return SecondaryButton(
       buttonText: 'Delete',
       onTap: () {
-        cartItemsController.removeItem(cartId: cartId,context: context);
+        cartItemsController.removeItem(cartId: cartId, context: context);
       },
       height: 25,
       width: 55,
@@ -312,46 +312,45 @@ class _CartScreenState extends State<CartScreen> {
             color: AppColors.fontOnSecondary,
             borderRadius: BorderRadius.circular(12)),
         child: Obx(
-              () =>
-              Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  billDetailRow(
-                      'Item Total',
-                      cartItemsController.cartSum.value?.sumTotal.toString() ??
-                          '...'),
-
-                  billDetailRow(
-                      'Product Delivery Charge',
-                      cartItemsController.cartSum.value?.productDeliveryCharge
+          () => Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              billDetailRow(
+                  'Item Total',
+                  cartItemsController.cartSum.value?.sumTotal.toString() ??
+                      '...'),
+              billDetailRow(
+                  'Product Delivery Charge',
+                  cartItemsController.cartSum.value?.productDeliveryCharge
                           .toString() ??
-                          '...'),
-
-                  billDetailRow(
-                      'Delivery Charge',
-                      cartItemsController.cartSum.value?.deliveryCharge
+                      '...'),
+              billDetailRow(
+                  'Delivery Charge',
+                  cartItemsController.cartSum.value?.deliveryCharge
                           .toString() ??
-                          '...'),
-
-                  billDetailRow(
-                      'Tax',
-                      cartItemsController.cartSum.value?.totalTax.toString() ??
-                          '...'),
-                  cartItemsController.isCouponAdded.value ? billDetailRow(
+                      '...'),
+              billDetailRow(
+                  'Tax',
+                  cartItemsController.cartSum.value?.totalTax.toString() ??
+                      '...'),
+              cartItemsController.isCouponAdded.value
+                  ? billDetailRow(
                       'Coupon applied',
                       cartItemsController.couponData.value?.discount
-                          .toString() ??
-                          '...') : SizedBox.shrink(),
-
-                  Divider(height: 0, thickness: 1,),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  billDetailRow(
-                      'Total Amount',
-                      cartItemsController.total.value.toString()),
-                ],
+                              .toString() ??
+                          '...')
+                  : SizedBox.shrink(),
+              Divider(
+                height: 0,
+                thickness: 1,
               ),
+              SizedBox(
+                height: 10,
+              ),
+              billDetailRow(
+                  'Total Amount', cartItemsController.total.value.toString()),
+            ],
+          ),
         ));
   }
 
@@ -368,56 +367,80 @@ class _CartScreenState extends State<CartScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Obx(
-                  () =>
-                  Expanded(
-                    flex: 1,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        PrimaryText(
-                          text: 'Would you like to pay online',
-                          fontSize: 12,
-                        ),
-                        Transform.scale(
-                          scale: .8,
-                          child: Radio(
-                              value: 'online',
-                              groupValue: selectedPayment.value,
-                              onChanged: (value) {
-                                selectedPayment.value = value!;
-                              }),
-                        )
-                      ],
+              () => Expanded(
+                flex: 1,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    PrimaryText(
+                      text: 'Would you like to pay online',
+                      fontSize: 12,
                     ),
-                  ),
+                    Transform.scale(
+                      scale: .8,
+                      child: Radio(
+                          value: 'online',
+                          groupValue: selectedPayment.value,
+                          onChanged: (value) {
+                            selectedPayment.value = value!;
+                          }),
+                    )
+                  ],
+                ),
+              ),
             ),
             SizedBox(
-              height: 5,
+              height: 10,
             ),
             Obx(
-                  () =>
-                  Expanded(
-                    flex: 1,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        PrimaryText(
-                          text: 'Would you like to pay cash on delivery',
-                          fontSize: 12,
-                        ),
-                        Transform.scale(
-                          scale: .8,
-                          child: Radio(
-                              value: 'CoD',
-                              groupValue: selectedPayment.value,
-                              onChanged: (value) {
-                                selectedPayment.value = value!;
-                              }),
-                        )
-                      ],
+              () => Expanded(
+                flex: 1,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    PrimaryText(
+                      text: 'Would you like to pay cash on delivery',
+                      fontSize: 12,
                     ),
-                  ),
+                    Transform.scale(
+                      scale: .8,
+                      child: Radio(
+                          value: 'CoD',
+                          groupValue: selectedPayment.value,
+                          onChanged: (value) {
+                            selectedPayment.value = value!;
+                          }),
+                    )
+                  ],
+                ),
+              ),
             ),
+            SizedBox(
+              height: 10,
+            ),
+            Obx(
+              () => Expanded(
+                flex: 1,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    PrimaryText(
+                      text: 'Would you like to pay on pick up',
+                      fontSize: 12,
+                    ),
+                    Transform.scale(
+                      scale: .8,
+                      child: Radio(
+                          value: 'Pick Up',
+                          groupValue: selectedPayment.value,
+                          onChanged: (value) {
+                            selectedPayment.value = value!;
+                          }),
+                    )
+                  ],
+                ),
+              ),
+            )
           ],
         ));
   }
@@ -456,17 +479,17 @@ class _CartScreenState extends State<CartScreen> {
     );
   }
 
-
   //address card
-  Widget addressCard({name,
-    type,
-    number,
-    pincode,
-    city,
-    district,
-    address,
-    defaultAddress,
-    addressId}) {
+  Widget addressCard(
+      {name,
+      type,
+      number,
+      pincode,
+      city,
+      district,
+      address,
+      defaultAddress,
+      addressId}) {
     return Container(
       padding: EdgeInsets.only(bottom: 5),
       child: Row(
@@ -576,7 +599,7 @@ class _CartScreenState extends State<CartScreen> {
             context: context,
             shopId: shopId,
             addressId: addressController.defaultAddress.toString(),
-            type:selectedPayment.value,
+            type: selectedPayment.value,
           );
         },
         backgroundColor: AppColors.primaryDark,
@@ -594,15 +617,18 @@ class _CartScreenState extends State<CartScreen> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Expanded(
-              child: PrimaryText(text: title.toString(),
-                fontSize: 12,
-                alignment: TextAlign.start,)),
+              child: PrimaryText(
+            text: title.toString(),
+            fontSize: 12,
+            alignment: TextAlign.start,
+          )),
           Expanded(
             child: PrimaryText(
               text: '₹ ${price.toString()}',
               fontSize: 12,
               fontWeight: FontWeight.w500,
-              alignment: TextAlign.end,),
+              alignment: TextAlign.end,
+            ),
           )
         ],
       ),
@@ -626,31 +652,33 @@ class _CartScreenState extends State<CartScreen> {
               height: 10,
             ),
           ),
-          SizedBox(width: 5,),
+          SizedBox(
+            width: 5,
+          ),
           Expanded(
               child: SecondaryButton(
-                isLoading: cartItemsController.isApplyingCouponLoading.value,
-                buttonText: 'Apply',
-                onTap: () {
-                  cartItemsController.applyCoupon(
-                      shopId: shopId, context: context);
-                },
-                borderColor: AppColors.inputBackgroundColor,
-                borderRadius: 15,
-                backgroundColor: AppColors.primaryDark,
-                fontColor: AppColors.fontOnSecondary,
-
-              ))
+            isLoading: cartItemsController.isApplyingCouponLoading.value,
+            buttonText: 'Apply',
+            onTap: () {
+              cartItemsController.applyCoupon(shopId: shopId, context: context);
+            },
+            borderColor: AppColors.inputBackgroundColor,
+            borderRadius: 15,
+            backgroundColor: AppColors.primaryDark,
+            fontColor: AppColors.fontOnSecondary,
+          ))
         ],
       ),
     );
   }
 
-  Widget headerText({required String heading,}) {
+  Widget headerText({
+    required String heading,
+  }) {
     return Container(
       margin: EdgeInsets.only(top: 19, bottom: 7),
       child:
-      PrimaryText(text: heading, fontWeight: FontWeight.w500, fontSize: 14),
+          PrimaryText(text: heading, fontWeight: FontWeight.w500, fontSize: 14),
     );
   }
 }

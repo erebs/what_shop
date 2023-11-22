@@ -93,7 +93,8 @@ class Product {
   final String? image4;
   final String? video;
   final String? link;
-
+  final bool? isFavourite;
+ final String? delStatus;
   Product({
     this.id,
     this.shopid,
@@ -110,7 +111,10 @@ class Product {
     this.image4,
     this.video,
     this.link,
-  });
+    this.isFavourite,
+    this.delStatus
+
+});
 
   factory Product.fromJson(Map<String, dynamic> json) {
     return Product(
@@ -129,6 +133,8 @@ class Product {
       image4: json['image4'],
       video: json['video'],
       link: json['link'],
+      delStatus:json['del_status'],
+      isFavourite: json['is_favorite']
     );
   }
 }

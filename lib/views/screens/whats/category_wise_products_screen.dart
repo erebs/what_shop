@@ -35,7 +35,6 @@ class _CategoryWiseProductScreenState extends State<CategoryWiseProductScreen> {
       CategoryWiseProductController(catId: dataFromPreviousScreen['categoryId'].toString()),
     );
     print(dataFromPreviousScreen);
-    print('afzxvczbnvcnbzvxnbcxzvnbzcv');
   }
 
   @override
@@ -55,6 +54,7 @@ class _CategoryWiseProductScreenState extends State<CategoryWiseProductScreen> {
 
           child: Obx(
                 () {
+                  final products = categoryWiseProductController.categoryProductResponse.value?.products;
                   if (categoryWiseProductController.categoryWiseProductState
                       .value == DataState.Loading) {
                     return ProductTileShimmerList();
@@ -74,39 +74,102 @@ class _CategoryWiseProductScreenState extends State<CategoryWiseProductScreen> {
                   return
                     ListView.builder(
                     controller: categoryWiseProductController.scrollController,
-                    itemCount: categoryWiseProductController.categoryProducts
-                        .length + 1,
+                    itemCount: categoryWiseProductController.categoryProducts.length + 1,
                     itemBuilder: (context, index) {
-                      if (index < categoryWiseProductController.categoryProducts
-                          .length) {
-                        final data = categoryWiseProductController
-                            .categoryProducts[index];
-                        return ProductListTileCard(data: data,onTap:(){
+                      if (index < categoryWiseProductController.categoryProducts.length) {
+                        final data = categoryWiseProductController.categoryProducts[index];
+                        return ProductTile(
+                          data:data,onTap:(){
                           Get.toNamed(
                                     RouteName.productDetailsScreen,
-                                    arguments: data.id.toString(),);
+                                    arguments: data?.id.toString(),);
                         } ,);
                       } else if (index ==
-                          categoryWiseProductController.categoryProducts
-                              .length) {
-                        return Obx(() =>
-                        categoryWiseProductController.pageNumber.value <
-                            categoryWiseProductController.lastPage!
+                         categoryWiseProductController.categoryProducts.length) {
+                        return Obx(() {
+                          final pageNumber = categoryWiseProductController.pageNumber.value;
+                          final lastPage = categoryWiseProductController.lastPage ?? 0;
+                       return  pageNumber < lastPage
                             ? Center(
                           child: CustomProgressIndicator(strokeWidth: 1),
                         )
-                            : SizedBox.shrink());
+                            : SizedBox.shrink();});
                       }
                       return SizedBox.shrink();
                     },
                   );
                 }
-    )
+  )
         ),
       ),
     );
   }
 
-
+  Widget ProductTile({required data,required onTap}){
+    return TouchableOpacity(
+      onTap:onTap,
+      child: Container(
+        height: 100,
+        padding: EdgeInsets.only(top: 10,
+            bottom: 10,
+            right:20),
+        color: AppColors.fontOnSecondary,
+        margin: EdgeInsets.only(bottom: 5),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            data != null
+                ? Expanded(
+              child: Container(
+                height: 100,
+                child: Image.network(
+                  AppVariables.baseUrl + data.image,
+                  errorBuilder: (context, error,
+                      stackTrace) =>
+                      Center(child: Text('!')),
+                ),
+              ),
+            )
+                : Container(),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment
+                    .start,
+                children: [
+                  PrimaryText(
+                    text: data.name,
+                    alignment: TextAlign.left,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  PrimaryText(
+                    text: data.desc,
+                    alignment: TextAlign.left,
+                    fontSize: 9,
+                  ),
+                ],
+              ),
+            ),
+            Expanded(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  //  Icon(
+                  // Remix.heart_fill,
+                  //   color: data.isFavourite == true ? Colors.pink.shade400 :
+                  //         AppColors.lightGrey,
+                  //  )
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 
 }

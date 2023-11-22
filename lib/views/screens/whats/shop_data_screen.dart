@@ -1,23 +1,23 @@
 import 'dart:ui';
-
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:shimmer/shimmer.dart';
+import 'package:remixicon/remixicon.dart';
 import 'package:touchable_opacity/touchable_opacity.dart';
 import 'package:what_shop/constants/app_colors.dart';
 import 'package:what_shop/constants/app_images.dart';
 import 'package:what_shop/constants/app_variables.dart';
+import 'package:what_shop/controller/add_favourite_product_controller.dart';
+import 'package:what_shop/controller/favourite_products_controller.dart';
+import 'package:what_shop/controller/favourite_shops_controller.dart';
 import 'package:what_shop/controller/shop_data_controller.dart';
 import 'package:what_shop/utils/api_state_enum.dart';
 import 'package:what_shop/utils/app_routes.dart';
 import 'package:what_shop/views/screens/widget/primary_text.dart';
 import 'package:what_shop/views/screens/widget/product_card.dart';
-import 'package:what_shop/views/screens/widget/shimmer_container.dart';
-import 'package:what_shop/views/widgets/buttons.dart';
 
 class ShopDataScreen extends StatefulWidget {
-  ShopDataScreen({Key? key}) : super(key: key);
+  const ShopDataScreen({Key? key}) : super(key: key);
 
   @override
   State<ShopDataScreen> createState() => _ShopDataScreen();
@@ -26,18 +26,21 @@ class ShopDataScreen extends StatefulWidget {
 class _ShopDataScreen extends State<ShopDataScreen> {
   late final ShopDataController shopDataController;
   var dataFromPreveScreen = Get.arguments;
-
+  final FavouriteProductsController favouriteProductController = Get.find();
   @override
   void initState() {
     super.initState();
     shopDataController =
         Get.put(ShopDataController(shopId: dataFromPreveScreen));
     WidgetsBinding.instance.addPostFrameCallback((_) {
-     Future.delayed(Duration(seconds: 2),() =>showDiscountPoster() ,) ;
+      Future.delayed(
+        const Duration(seconds: 2),
+        () => showDiscountPoster(),
+      );
       // showDiscountPoster();
-
-    });    // print('data from preve ${dataFromPreveScreen['shopName']}');
+    }); // print('data from preve ${dataFromPreveScreen['shopName']}');
   }
+
   Future<void> showDiscountPoster() async {
     final poster = shopDataController.poster.value;
 
@@ -46,46 +49,38 @@ class _ShopDataScreen extends State<ShopDataScreen> {
         enableDrag: false,
         context: context,
         backgroundColor: Colors.transparent,
-
         builder: (BuildContext context) {
           return Container(
-            height: double.infinity,
             width: Get.width,
-            decoration: BoxDecoration(
+            height: Get.height,
+            decoration: const BoxDecoration(
               color: Colors.transparent, // Set your desired background color
-
             ),
             child: BackdropFilter(
               filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
               child: Center(
                 child: Container(
-                  width:Get.width/1.5,
-                 height: 300,
-                  color: Colors.transparent,
+                  width: Get.width / 1.5,
+                  color: Colors.blue,
                   child: Stack(
                     children: [
-
-                      Center(
-                        child: Image.network(
-                          AppVariables.baseUrl + poster.image,
-                          fit: BoxFit.contain,
-                          width:Get.width/1.5,
-                          height: Get.height/3,
-                        ),
+                      Image.network(
+                        AppVariables.baseUrl + poster.image,
+                        // fit: BoxFit.contain,
                       ),
                       Positioned(
                         right: 0,
-                          top: 10,
-                          child: SecondaryButton(
-                            backgroundColor:AppColors.inputBackgroundColor,
-                        borderRadius:3,
-                        onTap: (){
-                              Get.back();
-                        },
-                        buttonText: 'close x',
-                            height: 25,
-                            width:55,
-                      ))
+                        child: IconButton(
+                          onPressed: () {
+                            Get.back();
+                          },
+                          icon:const Icon(
+                            size: 25,
+                            Remix.close_circle_fill,
+                            color: AppColors.fontOnSecondary,
+                          ),
+                        ),
+                      )
                       // Add more content as needed
                     ],
                   ),
@@ -127,11 +122,13 @@ class _ShopDataScreen extends State<ShopDataScreen> {
                   mainCarousel(),
                   categoryList(),
                   SizedBox(height: 5),
+                  favouriteProducts(),
+                  SizedBox(height: 3),
                   featuredProducts(),
                   SizedBox(height: 3),
-                  footerCarousel(),
-                  SizedBox(height: 3),
                   trendingProducts(),
+                  SizedBox(height: 3),
+                  footerCarousel(),
                   SizedBox(height: 3),
                   popularProducts(),
                 ],
@@ -214,8 +211,8 @@ class _ShopDataScreen extends State<ShopDataScreen> {
     }
 
     // Filtering out any possible null items and returning the list.
-    return itemList.where((banner) => banner != null).map((banner) {
-      return Container(
+    return itemList.map((banner) {
+      return SizedBox(
           width: Get.width,
           height: 170,
           child: Image.network(AppVariables.baseUrl + (banner.image ?? ''),
@@ -248,9 +245,9 @@ class _ShopDataScreen extends State<ShopDataScreen> {
               BoxDecoration(color: AppColors.fontOnSecondary, boxShadow: [
             BoxShadow(
                 color: AppColors.lightGrey,
-                offset: Offset(0, -1),
+                offset: Offset(0, 0),
                 spreadRadius: 0,
-                blurRadius: 4),
+                blurRadius: 0),
             BoxShadow(
                 color: AppColors.lightGrey,
                 offset: Offset(0, 1),
@@ -528,4 +525,52 @@ class _ShopDataScreen extends State<ShopDataScreen> {
       ),
     );
   }
+
+  Widget favouriteProducts(){
+    return Container (
+      height: Get.height * .215 ,
+        decoration:
+        BoxDecoration(color: AppColors.fontOnSecondary, boxShadow: [
+          BoxShadow(
+              color: AppColors.lightGrey,
+              offset: Offset(0, -1),
+              spreadRadius: 0,
+              blurRadius: 4),
+          BoxShadow(
+              color: AppColors.lightGrey,
+              offset: Offset(0, 1),
+              spreadRadius: 0,
+              blurRadius: 2),
+        ]),
+      child: Obx((){
+       final  data = favouriteProductController.favouriteProducts.value?.fav;
+        if(data == null || data.isEmpty ){
+          return SizedBox.shrink();
+        }
+        return  Column(
+          children: [
+          listHeading(context, headingText: 'Favourite Products', onTap: (){
+            Get.toNamed(RouteName.allFavouriteProductsScreen,arguments: data);
+          }),
+            Container(
+              height: Get.height * 0.15,
+              padding: EdgeInsets.only( left: 20,bottom: 5),
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: data.length,itemBuilder: (context, index) =>ProductCard(
+                image: data[index].image,
+                name: data[index].name,
+                marginRight: 15,
+                onTouch: (){
+                  Get.toNamed(RouteName.productDetailsScreen,arguments: data[index].productId.toString());
+                },
+              ) ,),
+            )
+          ],
+        );
+      })
+    );
+
+  }
+
 }

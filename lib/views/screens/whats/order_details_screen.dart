@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:remixicon/remixicon.dart';
 import 'package:touchable_opacity/touchable_opacity.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:what_shop/constants/appSizes.dart';
 import 'package:what_shop/constants/app_colors.dart';
 import 'package:what_shop/constants/app_images.dart';
@@ -23,11 +25,20 @@ class OrderDetailsScreen extends StatefulWidget {
 class _OrderDetailsScreen extends State<OrderDetailsScreen> {
   final OrderDetailsController orderDetailsController = Get.find();
 
+
   @override
   Widget build(BuildContext context) {
+    Future<void> _downloadInvoice({required orderId}) async {
+      final _url = Uri.parse('https://portal.umall.in/seller/invoice/$orderId');
+      if (!await launchUrl(_url)) {
+        throw Exception('Could not launch $_url');
+      }
+    }
     return SafeArea(
       child: Scaffold(
-        appBar: SecondaryCustomAppBar(title: 'Orders',),
+        appBar: SecondaryCustomAppBar(
+          title: 'Orders',
+        ),
         body: Container(
             color: AppColors.inputBackgroundColor,
             padding: const EdgeInsets.symmetric(
@@ -50,34 +61,77 @@ class _OrderDetailsScreen extends State<OrderDetailsScreen> {
                           Get.back();
                         });
                   }
-                  if(orderDetailsController.orderDataFetchingState.value == DataState.Data){
+                  if (orderDetailsController.orderDataFetchingState.value ==
+                      DataState.Data) {
                     return Expanded(
-                      child: ListView.builder(
-                          itemCount: orderDetailsController.orderDetailsResponse
-                              .value?.orderDetails.orderItems.length,
-                          itemBuilder: (context, index) {
-                            final data = orderDetailsController
-                                .orderDetailsResponse.value?.orderDetails;
-                            return Container(
-                              margin: EdgeInsets.only(bottom: 5),
-                              child: orderCard(
-                                  offerPrice: data?.orderItems[index].unit.offerprice
-                                      .toString() ??
-                                      '.',
-                                  price:
-                                  data?.orderItems[index].unit.price.toString() ??
-                                      '.',
-                                  onTap: () {},
-                                  image:data?.orderItems[index].product.image,
-                                  productName:
-                                  data?.orderItems[index].product.name ?? '.',
-                                  status: data?.order.paystatus ?? '.'),
-                            );
-                          }),
+                      child: Column(
+                        children: [
+                          Expanded(
+                            child: ListView.builder(
+                                itemCount: orderDetailsController
+                                    .orderDetailsResponse
+                                    .value
+                                    ?.orderDetails
+                                    .orderItems
+                                    .length,
+                                itemBuilder: (context, index) {
+                                  final data = orderDetailsController
+                                      .orderDetailsResponse.value?.orderDetails;
+                                  return Container(
+                                    margin: EdgeInsets.only(bottom: 5),
+                                    child: orderCard(
+                                        offerPrice: data?.orderItems[index].unit
+                                                .offerprice
+                                                .toString() ??
+                                            '.',
+                                        price: data
+                                                ?.orderItems[index].unit.price
+                                                .toString() ??
+                                            '.',
+                                        onTap: () {},
+                                        image: data
+                                            ?.orderItems[index].product.image,
+                                        productName: data?.orderItems[index]
+                                                .product.name ??
+                                            '.',
+                                        status: data?.order.paystatus ?? '.'),
+                                  );
+                                }),
+                          ),
+                          // FloatingActionButton(
+                          //     onPressed: () {},
+                          //     child: Icon(
+                          //       Remix.arrow_down_line,
+                          //     ),
+                          //     backgroundColor: AppColors.primaryDark,
+                          //  ),
+                          Container(
+                            height: Get.height * .05,
+                            child: SecondaryButton(
+                                borderRadius: 10,
+                                backgroundColor: AppColors.primaryDark,
+                                fontColor: Colors.white,
+                                fontSize: 12,
+                                height: 20,
+                                buttonText: 'Download invoice',
+                                onTap: () {
+                                  final String orderId = orderDetailsController
+                                      .orderDetailsResponse
+                                      .value!
+                                      .orderDetails
+                                      .order
+                                      .id
+                                      .toString();
+
+                                  _downloadInvoice(orderId: orderId);
+                                }),
+                          )
+                        ],
+                      ),
                     );
                   }
                   return SizedBox();
-                })
+                }),
               ],
             )),
       ),
@@ -127,7 +181,7 @@ class _OrderDetailsScreen extends State<OrderDetailsScreen> {
   // this is card widget for order
   Widget orderCard(
       {required onTap,
-        String? image,
+      String? image,
       required String productName,
       required String offerPrice,
       required String price,
@@ -146,30 +200,27 @@ class _OrderDetailsScreen extends State<OrderDetailsScreen> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Container(
-              decoration: BoxDecoration(
-                border: Border.all(
-                  color: AppColors.lightGrey
-                ),
-                borderRadius: BorderRadius.circular(10)
-              ),
-              width: 72,
-              height: 75,
-              child: image != null ? ClipRRect(
-                borderRadius: BorderRadius.circular(10),
-
-                child: Image.network(
-                  AppVariables.baseUrl + image,
-                  errorBuilder: (context, error, stackTrace) => Center(
-                    child: Text('!'),
-                  ),
-                  fit: BoxFit.cover,
-                ),
-              ):Container(
+                decoration: BoxDecoration(
+                    border: Border.all(color: AppColors.lightGrey),
+                    borderRadius: BorderRadius.circular(10)),
                 width: 72,
                 height: 75,
-                color: AppColors.inputBackgroundColor,
-              )
-            ),
+                child: image != null
+                    ? ClipRRect(
+                        borderRadius: BorderRadius.circular(10),
+                        child: Image.network(
+                          AppVariables.baseUrl + image,
+                          errorBuilder: (context, error, stackTrace) => Center(
+                            child: Text('!'),
+                          ),
+                          fit: BoxFit.cover,
+                        ),
+                      )
+                    : Container(
+                        width: 72,
+                        height: 75,
+                        color: AppColors.inputBackgroundColor,
+                      )),
             const SizedBox(
               width: 16,
             ),
@@ -209,7 +260,11 @@ class _OrderDetailsScreen extends State<OrderDetailsScreen> {
                     padding: EdgeInsets.only(top: 10),
                     child: PrimaryText(
                       text: status,
-                      color: status == 'Pending' ? Colors.amber : status == 'Success' ? Colors.green : Colors.blueAccent ,
+                      color: status == 'Pending'
+                          ? Colors.amber
+                          : status == 'Success'
+                              ? Colors.green
+                              : Colors.blueAccent,
                     ),
                   )
                 ],

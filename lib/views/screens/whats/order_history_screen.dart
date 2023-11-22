@@ -11,6 +11,7 @@ import 'package:what_shop/utils/app_routes.dart';
 import 'package:what_shop/views/screens/common/error_page.dart';
 import 'package:what_shop/views/screens/widget/primary_text.dart';
 import 'package:what_shop/views/screens/widget/secondary_custom_app_bar.dart';
+import 'package:what_shop/views/widgets/buttons.dart';
 
 class OrderHistoryScreen extends StatefulWidget {
   const OrderHistoryScreen({super.key});
@@ -75,7 +76,8 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
                     );
                   }
                   return Text('EMpty outside');
-                })
+                }),
+
               ],
             ),
           )),

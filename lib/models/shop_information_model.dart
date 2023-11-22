@@ -1,18 +1,22 @@
 class ShopInformationResponse {
   String sts;
   String msg;
+  bool  isFavourite;
   ShopDetails shopDetails;
 
   ShopInformationResponse({
     required this.sts,
     required this.msg,
+    required this.isFavourite,
     required this.shopDetails,
+
   });
 
   factory ShopInformationResponse.fromJson(Map<String, dynamic> json) {
     return ShopInformationResponse(
       sts: json['sts'],
       msg: json['msg'],
+      isFavourite:json['favourite_status'],
       shopDetails: ShopDetails.fromJson(json['shop_details']),
     );
   }

@@ -6,22 +6,20 @@ import 'package:remixicon/remixicon.dart';
 import 'package:what_shop/constants/app_colors.dart';
 import 'package:what_shop/constants/app_images.dart';
 import 'package:what_shop/constants/app_variables.dart';
-import 'package:what_shop/controller/cart_count_controller.dart';
+import 'package:what_shop/controller/favourite_shops_controller.dart';
 import 'package:what_shop/controller/home_screen_controller.dart';
 import 'package:what_shop/controller/location_controller.dart';
 import 'package:what_shop/controller/test_controller.dart';
 import 'package:what_shop/controller/user_data_controller.dart';
-import 'package:what_shop/models/shops_near_user_model.dart';
 import 'package:what_shop/utils/api_state_enum.dart';
 import 'package:what_shop/utils/app_routes.dart';
+import 'package:what_shop/utils/shared_pref_util.dart';
 import 'package:what_shop/views/screens/common/error_page.dart';
-import 'package:what_shop/views/screens/whats/main_screen.dart';
 import 'package:what_shop/views/screens/widget/app_bar.dart';
 import 'package:what_shop/views/screens/widget/primary_text.dart';
 import 'package:what_shop/views/screens/widget/progress_indicator.dart';
 import 'package:what_shop/views/screens/widget/shop_card.dart';
 import 'package:what_shop/views/widgets/buttons.dart';
-import 'package:what_shop/views/widgets/inputs.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key); // Corrected super call
@@ -33,6 +31,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreen extends State<HomeScreen> {
   void initState() {
     super.initState();
+    favouriteShopsController = Get.put(FavouriteShopsController());
   }
 
   final UserDataController userDataController = Get.put(UserDataController());
@@ -40,6 +39,9 @@ class _HomeScreen extends State<HomeScreen> {
       Get.put(HomeScreenController(), permanent: true);
   final LocationController locationController = Get.put(LocationController());
   final HomeController homeController = Get.put(HomeController());
+
+  // final FavouriteShopsController favouriteShopsController = Get.put(FavouriteShopsController());
+  late final FavouriteShopsController favouriteShopsController;
   DateTime? lastPressed;
 
   @override
@@ -62,15 +64,19 @@ class _HomeScreen extends State<HomeScreen> {
                       homeController.getHomeData();
                     });
               }
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  carousel(),
-                  buildLocationRow(context),
-                  const SizedBox(height: 5),
-                  displayShops(),
-                  const SizedBox(height: 15),
-                ],
+              return Container(
+                constraints: BoxConstraints(),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    carousel(),
+                    buildLocationRow(),
+                    const SizedBox(height: 5),
+                    favouriteShops(),
+                    displayShops(),
+                    const SizedBox(height: 15),
+                  ],
+                ),
               );
             }),
           ),
@@ -82,7 +88,7 @@ class _HomeScreen extends State<HomeScreen> {
   // This widget is to pass items to carousel carousel
   List<Widget> mainCarouselItems() {
     final itemList = homeScreenController.shopsNearUser.value?.firstad;
-    if(itemList == null || itemList.isEmpty){
+    if (itemList == null || itemList.isEmpty) {
       return [];
     }
     // Filtering out any possible null items and returning the list.
@@ -111,7 +117,8 @@ class _HomeScreen extends State<HomeScreen> {
 
   Widget carousel() {
     return Obx(() {
-      if (homeScreenController.shopData.value.firstad.isEmpty || mainCarouselItems().isEmpty) {
+      if (homeScreenController.shopData.value.firstad.isEmpty ||
+          mainCarouselItems().isEmpty) {
         return SizedBox(height: 10);
       }
       return CarouselSlider(
@@ -128,12 +135,14 @@ class _HomeScreen extends State<HomeScreen> {
   }
 
   // it display location box and apply button in row
-  Widget buildLocationRow(BuildContext context) {
+  Widget buildLocationRow() {
     return Row(
       children: [
-        locationBox(context, onTap: () {
-          homeController.getHomeData();
-        }, place: homeController.locality),
+        locationBox(
+            onTap: () {
+              homeController.getHomeData();
+            },
+            place: homeController.locality),
         const SizedBox(width: 8),
         applyButton()
       ],
@@ -160,7 +169,7 @@ class _HomeScreen extends State<HomeScreen> {
 
   ///////////////////////////////////////////////////////
   // it is widget that display and the location TextField
-  Widget locationBox(BuildContext context, {onTap, var place}) {
+  Widget locationBox({onTap, var place}) {
     return Container(
         height: 45,
         width: Get.width * 0.62,
@@ -228,16 +237,15 @@ class _HomeScreen extends State<HomeScreen> {
               itemBuilder: (context, index) {
                 final shop = newshops?[index];
                 return Padding(
-                  padding: EdgeInsets.only(
-
-                  ),
+                  padding: EdgeInsets.only(),
                   child: ShopCard(
                     image: shop?.logo ?? '',
                     name: shop?.name ?? '',
-                    onTap: () {
+                    onTap: () async{
+                      await SharedPrefUtil().setShopId(shopId:shop!.id.toString());
                       Get.toNamed(
                         RouteName.mainScreen,
-                        arguments: shop?.id,
+                        arguments: shop.id.toString(),
                       );
                     },
                   ),
@@ -281,7 +289,8 @@ class _HomeScreen extends State<HomeScreen> {
                     child: ShopCard(
                         image: shop.logo,
                         name: shop.name,
-                        onTap: () {
+                        onTap: () async{
+                          await SharedPrefUtil().setShopId(shopId: shop.id.toString());
                           Get.toNamed(
                             RouteName.mainScreen,
                             arguments: shop.id.toString(),
@@ -393,8 +402,8 @@ class _HomeScreen extends State<HomeScreen> {
                       child: ShopCard(
                         image: shop.logo ?? '',
                         name: shop.name,
-                        onTap: () {
-                          print(shop.id);
+                        onTap: () async{
+                          await SharedPrefUtil().setShopId(shopId: shop.id.toString());
                           Get.toNamed(RouteName.mainScreen,
                               arguments: shop.id.toString());
                           // Get.toNamed(RouteName.shopDetailsScreen);
@@ -455,13 +464,44 @@ class _HomeScreen extends State<HomeScreen> {
     }
     return Future.value(true);
   }
+
+  Widget favouriteShops() {
+    final data = favouriteShopsController.favouriteShops.value?.fav;
+    if (data == null || data.isEmpty) {
+      return SizedBox.shrink(); // or show a different widget
+    } else {
+      return Container(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            heading(headingText: 'Favourite'),
+            Container(
+              height: Get.height * .13,
+              child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: data.length,
+                  itemBuilder: (context, index) => ShopCard(
+                        onTap: () async {
+                          await SharedPrefUtil().setShopId(shopId: data[index].shopId.toString());
+                          Get.toNamed(RouteName.mainScreen,
+                              arguments: data[index].shopId.toString());
+                        },
+                        image: data[index].logo,
+                        name: data[index].name,
+                      )),
+            ),
+          ],
+        ),
+      );
+    }
+  }
 }
 
 //Heading is for the heading text of shop category
 
 Widget heading({required headingText}) {
   return Padding(
-    padding: const EdgeInsets.only(left: 7, bottom: 13, top: 18),
+    padding: const EdgeInsets.only(left: 0, bottom: 13, top: 18),
     child: PrimaryText(
       text: headingText,
       fontSize: 10,

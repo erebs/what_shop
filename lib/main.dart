@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:what_shop/utils/app_routes.dart';
 import 'package:what_shop/views/screens/authentication/splash_screen.dart';
+import 'package:what_shop/views/screens/whats/test.dart';
 
 // Note
 // location package file not added for ios

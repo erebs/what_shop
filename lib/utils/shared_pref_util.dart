@@ -39,4 +39,14 @@ return {
     await pref.remove('userId');
   }
 
+  Future<void> setShopId({required shopId})async{
+    final pref =await SharedPreferences.getInstance();
+    await pref.setString('shopId',shopId);
+  }
+
+  Future<String?> getShopId()async{
+    final pref =await SharedPreferences.getInstance();
+    return pref.getString('shopId');
+  }
+
 }

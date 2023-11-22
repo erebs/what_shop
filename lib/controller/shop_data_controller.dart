@@ -8,21 +8,22 @@ import 'package:what_shop/models/product_model.dart';
 import 'package:what_shop/models/shop_details_by_id_model.dart';
 import 'package:what_shop/utils/api_services.dart';
 import 'package:what_shop/utils/api_state_enum.dart';
+import 'package:what_shop/utils/shared_pref_util.dart';
 
 class ShopDataController extends GetxController {
   String shopId;
 
   ShopDataController({required this.shopId});
 
-  // final LocationController location = Get.find();
   Rx<ProductResponse?> featuredProducts = Rx<ProductResponse?>(null);
   Rx<ProductResponse?> trendingProducts = Rx<ProductResponse?>(null);
   Rx<ProductResponse?> popularProducts = Rx<ProductResponse?>(null);
   Rx<ProductResponse?> allProductByCategory = Rx<ProductResponse?>(null);
   Rx<CategoryResponse?> categoryResponse = Rx<CategoryResponse?>(null);
 
- RxInt currentPage = 1.obs;
-  int? lastPage ;
+  RxInt currentPage = 1.obs;
+  int? lastPage;
+
   var featuredProductState = DataState.Loading.obs;
   var trendingProductState = DataState.Loading.obs;
   var popularProductState = DataState.Loading.obs;
@@ -41,6 +42,7 @@ class ShopDataController extends GetxController {
   void onInit() {
     super.onInit();
     // _getShopDetailsById();
+    SharedPrefUtil().setShopId(shopId: shopId);
     _getBanners();
     getCategories();
     _getFeaturedProducts();
@@ -49,8 +51,6 @@ class ShopDataController extends GetxController {
     // getAllFeaturedProducts(pageNumber);
     // ever(pageNumber, (value) => _getAllFeaturedProducts(pageNumber));
   }
-
-
 
   Future<void> _getBanners() async {
     try {
@@ -88,6 +88,8 @@ class ShopDataController extends GetxController {
   void getCategories() async {
     try {
       isLoading.value = true;
+      final shopIdfromdevice = await SharedPrefUtil().getShopId();
+      print(' shop id from device$shopIdfromdevice');
       final response = await ApiService()
           .post(endPoint: 'shopcategories', body: {'shopid': shopId});
       if (response?.statusCode == 200) {
@@ -100,13 +102,12 @@ class ShopDataController extends GetxController {
             categoryResponseState.value = DataState.Empty;
           }
           print('CATEGORY RESPONSE : ${categoryResponse.value?.categories}');
-        }else{
-          categoryResponseState.value =  DataState.Error;
-
+        } else {
+          categoryResponseState.value = DataState.Error;
         }
       }
     } catch (e) {
-      categoryResponseState.value =  DataState.Error;
+      categoryResponseState.value = DataState.Error;
       print(e.toString());
     }
   }
@@ -115,9 +116,10 @@ class ShopDataController extends GetxController {
   // featured product
   Future<void> _getFeaturedProducts() async {
     try {
+      final String? userId = await SharedPrefUtil().getUserId();
       final response = await ApiService().post(
         endPoint: 'featured_products',
-        body: {'shopid': shopId},
+        body: {'shopid': shopId, 'userid': userId.toString()},
       );
 
       if (response!.statusCode == 200) {
@@ -125,7 +127,6 @@ class ShopDataController extends GetxController {
 
         if (jsonData['sts'] == '01') {
           featuredProducts.value = ProductResponse.fromJson(jsonData);
-
           featuredProductState.value =
               featuredProducts.value?.featuredproducts?.data?.isNotEmpty == true
                   ? DataState.Data
@@ -200,29 +201,33 @@ class ShopDataController extends GetxController {
 
 //   this is a dynamic api calling though the name is allfeatured products i will change te name once i have enough tym for this
 //  this is for fetching all products according featured,popular or trending
-  Future<void> getAllProductsByCategory(pageNumber, endPoint,categoryName) async {
+  Future<void> getAllProductsByCategory(
+      pageNumber, endPoint, categoryName) async {
     try {
-      if(allProducts.isEmpty){
+      if (allProducts.isEmpty) {
         isAllProductsLoading.value = true;
       }
+      final String? userId = await SharedPrefUtil().getUserId();
       print('api called');
       final response = await ApiService().post(
-          endPoint: '$endPoint?page=$pageNumber', body: {'shopid': shopId});
-      if(response == null){
+          endPoint: '$endPoint?page=$pageNumber',
+          body: {'shopid': shopId, 'userId': userId.toString()});
+      if (response == null) {
         return;
       }
       if (response.statusCode == 200) {
         final jsonData = jsonDecode(response.body);
         if (jsonData['sts'] == '01') {
           allProductByCategory.value = ProductResponse.fromJson(jsonData);
-          allProducts.addAll((jsonData[categoryName]['data'] as List).map((item)=>Product.fromJson(item)).toList());
-          print('$categoryName $allProducts');
+
+          allProducts.addAll((jsonData[categoryName]['data'] as List)
+              .map((item) => Product.fromJson(item))
+              .toList());
           lastPage = jsonData[categoryName]['last_page'];
-          print('LAST PAGE $lastPage');
+
           if (allProductByCategory.value?.featuredproducts?.data?.isNotEmpty ==
               true) {
             allProductState.value = DataState.Data;
-
           }
         } else {
           allProductState.value = DataState.Error;
@@ -279,12 +284,11 @@ class ShopDataController extends GetxController {
 
 //  decrement pageNumber for pagination
 
-  // bool decrementPage() {
-  //   if (pageNumber.value == 1) {
-  //     return false;
-  //   }
-  //   pageNumber.value -= 1;
-  //   return true;
-  // }
-
+// bool decrementPage() {
+//   if (pageNumber.value == 1) {
+//     return false;
+//   }
+//   pageNumber.value -= 1;
+//   return true;
+// }
 }

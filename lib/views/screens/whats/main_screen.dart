@@ -7,10 +7,13 @@ import 'package:touchable_opacity/touchable_opacity.dart';
 import 'package:what_shop/constants/appSizes.dart';
 import 'package:what_shop/constants/app_colors.dart';
 import 'package:what_shop/controller/cart_count_controller.dart';
+import 'package:what_shop/controller/favourite_products_controller.dart';
+import 'package:what_shop/controller/favourite_shops_controller.dart';
 import 'package:what_shop/controller/home_screen_controller.dart';
 import 'package:what_shop/controller/product_search_controller.dart';
 import 'package:what_shop/controller/shop_information_controller.dart';
 import 'package:what_shop/controller/user_data_controller.dart';
+import 'package:what_shop/models/favourite_shop_model.dart';
 import 'package:what_shop/utils/app_routes.dart';
 import 'package:what_shop/utils/shared_pref_util.dart';
 import 'package:what_shop/views/screens/whats/product_search_screen.dart';
@@ -30,11 +33,13 @@ class MainScreen extends StatefulWidget {
 class _MainScreen extends State<MainScreen> {
   late final ShopInformationController shopInformationController;
   final controller = Get.put(CartCountController(), permanent: true);
+
   final dataFromPreveScreen = Get.arguments;
   final HomeScreenController homeScreenController =
       Get.put(HomeScreenController());
   final UserDataController userDataController = Get.find();
  final ProductSearchController productSearchController = Get.put(ProductSearchController(shopId:Get.arguments));
+ final FavouriteProductsController favouriteShopsController = Get.put(FavouriteProductsController());
   var _currentIndex = 0;
   final List<Widget> _pages = [
     ShopDataScreen(),
@@ -47,7 +52,7 @@ class _MainScreen extends State<MainScreen> {
 
   void initState() {
     super.initState();
-    shopInformationController = Get.put(ShopInformationController(shopId:dataFromPreveScreen));
+    shopInformationController = Get.put(ShopInformationController());
     print(' data from preve main screen$dataFromPreveScreen');
   }
 
@@ -57,7 +62,7 @@ class _MainScreen extends State<MainScreen> {
       appBar: ShopAppBar(
 logo: shopInformationController.shopInformation.value?.shopDetails.logo ?? '',
         isHome: true,
-        shopId: '',
+        shopId: Get.arguments,
       ),
       drawer: Drawer(
         width: Get.width * 0.67,
@@ -134,10 +139,6 @@ logo: shopInformationController.shopInformation.value?.shopDetails.logo ?? '',
                                   },
                                       icon: Remix.user_location_fill,
                                       title: 'My Address'),
-                                  drawerLink(context,
-                                      onTap: () {},
-                                      icon: Remix.map_pin_5_fill,
-                                      title: 'Select PinCode'),
                                   drawerLink(context, onTap: () {
                                     SharedPrefUtil().deleteToken();
                                     Get.offAllNamed(RouteName.loginScreen);

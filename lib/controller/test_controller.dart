@@ -27,6 +27,7 @@ class HomeController extends GetxController {
 
   Future<void> getHomeData() async {
    homeScreenController.isLoading.value = true;
+   homeScreenController.errorMessage.value = '';
    pinCodeController.clear();
     // checking if user device location is turned on or not
     if (await Permission.location.serviceStatus.isEnabled) {

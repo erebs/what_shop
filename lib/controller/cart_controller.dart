@@ -183,11 +183,6 @@ customBottomSnakbar(context: context, text:'Item removed');
     }
   }
 
-  Future<void> placeOrder() async {
-    try {} catch (e) {
-      print(e.toString());
-    }
-  }
 
 // function to calculate price
 // void calculateTotal(){
@@ -312,7 +307,7 @@ customBottomSnakbar(context: context, text:'Item removed');
     try {
       isBuyNowProccessing.value = true;
 
-      if(addressController.addresses.value.isEmpty){
+      if(addressController.addresses.isEmpty){
         customSnackBar(message: 'Please add an address');
         return;
       }
